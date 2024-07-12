@@ -11,7 +11,7 @@ const searchInput= document.querySelector("[data-searchInput]");
 // initial variables 
 
  let oldTab=userTab;
- const API_KEY="f9f8f09248c4ab582c8c31e15cfbf730";
+ const API_KEY="4b1cc997a0d0122f15277e80f369235a";
  oldTab.classList.add("current-tab");
  getfromSessionStorage();
 
@@ -29,7 +29,7 @@ function switchTab(newTab){
         }
 
         else {
-            searchForm.classList.remove("current-tab");
+            searchForm.classList.remove("active");
             userInfoContainer.classList.remove("active");
             getfromSessionStorage();
         }
@@ -62,16 +62,19 @@ async function fetchUserWeatherInfo(coordinates){
     
     //api call
     try{
-        const response =await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}`);
+        const response =await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
         const data = await response.json();
 
         loadingScreen.classList.remove("active");
         userInfoContainer.classList.add("active");
         renderWeatherInfo(data);
-    }  
+        console.log(data);
+    } 
+
     catch(err){
         loadingScreen.classList.remove("active");
     }
+   
 }
 
 function renderWeatherInfo(weatherInfo){
@@ -91,10 +94,16 @@ function renderWeatherInfo(weatherInfo){
     countryIcon.src = `https://flagcdn.com/144x108/${weatherInfo?.sys?.country.toLowerCase()}.png`;
     desc.innerText = weatherInfo?.weather?.[0]?.description;
     weatherIcon.src = `http://openweathermap.org/img/w/${weatherInfo?.weather?.[0]?.icon}.png`;
-    temp.innerText = `${weatherInfo?.main?.temp} °C`;
+    temp.innerText = `${weatherInfo?.main.temp} °C`;
+
+    //checking
+    console.log(weatherInfo?.main.temp);
+
+
     windspeed.innerText = `${weatherInfo?.wind?.speed} m/s`;
     humidity.innerText = `${weatherInfo?.main?.humidity}%`;
     cloudiness.innerText = `${weatherInfo?.clouds?.all}%`;
+    // console.log("ho rha kya render ye");
     
 }
 
@@ -143,7 +152,8 @@ async function fetchSearchWeatherInfo(city){
          const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`);
 
          const data= await response.json();
-         loadingScreen.classList.add("active");
+         loadingScreen.classList.remove("active");
+         userInfoContainer.classList.add("active");
          renderWeatherInfo(data);
     }
 
